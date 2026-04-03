@@ -1,4 +1,7 @@
-
+; SPDX-FileCopyrightText: 2025-2026 Zeal 8-bit Computer <contact@zeal8bit.com>
+;
+; SPDX-License-Identifier: CC0-1.0
+ 
     .area _TEXT
 
     ; Erase the whole chip.
@@ -225,12 +228,13 @@ _nor_flash_get_id:
     ; Parameters:
     ;   HL - milliseconds
     ; Returns:
-    ;   Nonde
+    ;   None
     .globl _sleep_ms
 _sleep_ms:
     ex de, hl
 _sleep_ms_loop:
-    ld bc, #10000000 / #1000 / #24
+    ; At 10MHz, the CPU executes 10,000 T-states in one ms
+    ld bc, #10000 / #24
 _sleep_ms_waste_time:
     ; 24 T-states for the following, until 'jp nz, _zos_waste_time'
     dec bc

@@ -1,3 +1,6 @@
+; SPDX-FileCopyrightText: 2025-2026 Zeal 8-bit Computer <contact@zeal8bit.com>
+;
+; SPDX-License-Identifier: CC0-1.0
 
 CRC32_CONTROLLER = 2;
 zvb_dev     = 0x8e;
@@ -53,17 +56,17 @@ _crc32_next_byte:
     ; Parameters:
     ;   None
     ; Returns:
-    ;   DEHL - 32-bit CRC32
+    ;   HLDE - 32-bit CRC32
     .globl _crc32_checksum
 _crc32_checksum:
     ld a, #CRC32_CONTROLLER
     out (zvb_dev), a
     in a, (crc_byte0)
-    ld l, a
-    in a, (crc_byte1)
-    ld h, a
-    in a, (crc_byte2)
     ld e, a
-    in a, (crc_byte3)
+    in a, (crc_byte1)
     ld d, a
+    in a, (crc_byte2)
+    ld l, a
+    in a, (crc_byte3)
+    ld h, a
     ret
