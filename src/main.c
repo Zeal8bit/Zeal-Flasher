@@ -135,6 +135,12 @@ int main(int argc, char** argv)
     static uint16_t page_size;
     static uint32_t checksum;
 
+    const zos_config_t* config = kernel_config();
+    if (config->c_target != TARGET_ZEAL8BIT) {
+        printf("This program can only run on Zeal 8-bit Computer\n");
+        return 1;
+    }
+
     /* Zeal OS passes the whole command line as argv[0]. */
     const char* filename = NULL;
     if (argc == 1 && argv != NULL && argv[0] != NULL) {
@@ -154,12 +160,6 @@ int main(int argc, char** argv)
         printf("Error: flash address must be aligned to 16KB boundary\n");
         return 1;
     }
-    const zos_config_t* config = kernel_config();
-    if (config->c_target != TARGET_ZEAL8BIT) {
-        printf("This program can only run on Zeal 8-bit Computer\n");
-        return 1;
-    }
-
     if (!nor_flash_detect_chip()) {
         printf("No compatible NOR flash detected, aborting.\n");
         return 1;
