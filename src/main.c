@@ -141,20 +141,17 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    if (!nor_flash_detect_chip()) {
-        printf("No compatible NOR flash detected, aborting.\n");
+    /* Zeal OS passes the whole command line as argv[0]. */
+    const char* filename = NULL;
+    if (argc == 1 && argv != NULL && argv[0] != NULL) {
+        filename = strtok(argv[0], " \t");
+    }
+    if (filename == NULL) {
+        printf("Usage: flasher.bin <file_to_flash> [<address_in_flash>]\n");
         return 1;
     }
 
-    /* Parse the filename from the parameters */
-    if (argc != 1) {
-        printf("Usage: flash.bin <file_to_flash> [<address_in_flash>]\n");
-        return 1;
-    }
-
-    /* Retrieve the file from the parameters */
-    const char* filename = strtok(argv[0], " ");
-    char *addr_tok = strtok(NULL, " ");
+    char *addr_tok = strtok(NULL, " \t");
     if (addr_tok) {
         nor_flash_addr_start = strtoul(addr_tok, NULL, 0);
         nor_flash_page_start = nor_flash_addr_start / 0x4000;
@@ -163,11 +160,16 @@ int main(int argc, char** argv)
         printf("Error: flash address must be aligned to 16KB boundary\n");
         return 1;
     }
+    if (!nor_flash_detect_chip()) {
+        printf("No compatible NOR flash detected, aborting.\n");
+        return 1;
+    }
+
     printf("File to flash: %s\nNOR flash address: %lx\n", filename, nor_flash_addr_start);
 
     zos_dev_t f = open(filename, O_RDONLY);
     if (f < 0) {
-        printf("Failed to open %s, error %d\n", "udpdate.bin", -f);
+        printf("Failed to open %s, error %d\n", filename, -f);
         return -f;
     }
 
